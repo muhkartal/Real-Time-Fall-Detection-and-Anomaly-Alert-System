@@ -6,8 +6,8 @@ EdgeVision-Guard is a production-ready, real-time fall detection and anomaly ale
 
 ![EdgeVision-Guard Platform](https://via.placeholder.com/800x400?text=EdgeVision-Guard+Platform)
 
-[![CI Status](https://github.com/yourusername/EdgeVision-Guard/workflows/CI/badge.svg)]
-[![CD Status](https://github.com/yourusername/EdgeVision-Guard/workflows/CD/badge.svg)]
+[![CI Status](https://github.com/muhkartal/EdgeVision-Guard/workflows/CI/badge.svg)]
+[![CD Status](https://github.com/muhkartal/EdgeVision-Guard/workflows/CD/badge.svg)]
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
