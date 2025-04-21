@@ -1,170 +1,190 @@
-name: CD
+name: CI
 
 on:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
-
-env:
-  REGISTRY: ghcr.io
-  ORGANIZATION: ${{ github.repository_owner }}
-  IMAGE_NAME: edgevision-guard
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
-  build-and-push:
-    name: Build and Push
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff black pytest
+        pip install -r requirements.txt
+    
+    - name: Lint with ruff
+      run: |
+        ruff check .
+    
+    - name: Check formatting with black
+      run: |
+        black --check .
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install -r requirements.txt
+        sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx
+    
+    - name: Create directories
+      run: |
+        mkdir -p models data/up-fall data/ur-fall logs
+    
+    - name: Run tests
+      run: |
+        pytest tests/ --cov=src/ --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v3
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Extract metadata for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha,format=short
-    
-    # Build and push inference service (x86_64)
-    - name: Build and push inference service
+    - name: Build inference service
       uses: docker/build-push-action@v4
       with:
         context: .
         file: ./docker/Dockerfile
         target: inference-service
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-inference:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-inference:latest
-        platforms: linux/amd64
+        push: false
+        tags: edgevision-guard-inference:test
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
-    # Build and push dashboard (x86_64)
-    - name: Build and push dashboard
+    - name: Build dashboard
       uses: docker/build-push-action@v4
       with:
         context: .
         file: ./docker/Dockerfile
         target: dashboard
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-dashboard:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-dashboard:latest
-        platforms: linux/amd64
+        push: false
+        tags: edgevision-guard-dashboard:test
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
-    # Build and push training image (x86_64)
-    - name: Build and push training image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./docker/Dockerfile
-        target: training
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-training:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-training:latest
-        platforms: linux/amd64
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-    
-    # Build and push edge inference service (multi-arch)
-    - name: Build and push edge inference service
+    - name: Build edge image
       uses: docker/build-push-action@v4
       with:
         context: .
         file: ./docker/Dockerfile.edge
         target: inference-service
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-inference-edge:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-inference-edge:latest
-        platforms: linux/amd64,linux/arm64
+        push: false
+        tags: edgevision-guard-inference-edge:test
         cache-from: type=gha
         cache-to: type=gha,mode=max
-    
-    # Build and push edge dashboard (multi-arch)
-    - name: Build and push edge dashboard
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./docker/Dockerfile.edge
-        target: dashboard
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-dashboard-edge:${{ steps.meta.outputs.version }},${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-dashboard-edge:latest
+        # Use QEMU for ARM64 support
         platforms: linux/amd64,linux/arm64
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-  
-  release:
-    name: Create Release
+
+  demo_train:
+    name: Demo Training
     runs-on: ubuntu-latest
-    needs: build-and-push
-    if: startsWith(github.ref, 'refs/tags/v')
+    needs: lint
+    if: github.event_name == 'pull_request'
     
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     
-    - name: Generate changelog
-      id: changelog
-      uses: metcalfc/changelog-generator@v4.1.0
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        myToken: ${{ secrets.GITHUB_TOKEN }}
+        python-version: '3.11'
+        cache: 'pip'
     
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        body: |
-          # EdgeVision-Guard ${{ github.ref_name }}
-          
-          ## What's New
-          ${{ steps.changelog.outputs.changelog }}
-          
-          ## Docker Images
-          
-          ### Cloud Deployment
-          ```bash
-          docker pull ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-inference:${{ steps.meta.outputs.version }}
-          docker pull ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-dashboard:${{ steps.meta.outputs.version }}
-          ```
-          
-          ### Edge Deployment (Raspberry Pi / Jetson Nano)
-          ```bash
-          docker pull ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-inference-edge:${{ steps.meta.outputs.version }}
-          docker pull ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.IMAGE_NAME }}-dashboard-edge:${{ steps.meta.outputs.version }}
-          ```
-          
-          ## Quick Start
-          
-          ```bash
-          # Clone the repository
-          git clone https://github.com/${{ github.repository }}.git
-          cd ${{ env.IMAGE_NAME }}
-          
-          # Start the services
-          docker-compose up -d
-          ```
-          
-          For edge devices:
-          ```bash
-          docker-compose -f docker-compose.edge.yml up -d
-          ```
-        draft: false
-        prerelease: false
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx
+    
+    - name: Create directories
+      run: |
+        mkdir -p models data/up-fall data/ur-fall logs
+    
+    - name: Create dummy dataset
+      run: |
+        python -c "
+import numpy as np
+import os
+
+# Create a dummy dataset for testing training
+def create_dummy_dataset():
+    os.makedirs('data/up-fall/processed', exist_ok=True)
+    
+    # Create 10 dummy sequence files
+    for i in range(10):
+        # Sequences shape: (5, 30, 51) - 5 sequences of 30 frames with 51 features
+        sequences = np.random.randn(5, 30, 51).astype(np.float32)
+        
+        # Labels: 0=no fall, 1=fall, 2=other
+        labels = np.random.randint(0, 3, size=5).astype(np.int64)
+        
+        # Save as npz file
+        np.savez(
+            f'data/up-fall/processed/dummy_sequence_{i}.npz',
+            sequences=sequences,
+            labels=labels,
+            metadata={
+                'dataset': 'up-fall',
+                'activity': 'dummy',
+                'sequence_id': str(i),
+                'sequence_length': 30,
+            }
+        )
+    
+    print(f'Created dummy dataset with 10 files in data/up-fall/processed/')
+
+create_dummy_dataset()
+        "
+    
+    - name: Run demo training
+      run: |
+        python src/train.py --epochs 5 --batch-size 2 --subset 0.1 --device cpu
+    
+    - name: Verify model was created
+      run: |
+        ls -la models/
+        if [ ! -f models/*_final.pth ]; then
+          echo "Error: No model file was created"
+          exit 1
+        fi
