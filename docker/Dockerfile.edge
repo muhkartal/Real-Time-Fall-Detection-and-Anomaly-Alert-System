@@ -1,0 +1,66 @@
+# Base image for ARM64 architecture (Raspberry Pi / Jetson Nano)
+FROM python:3.11-slim-bullseye as base
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    wget \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    # Optimize for ARM
+    OPENBLAS_CORETYPE=ARMV8 \
+    NUMBA_THREADING_LAYER=workqueue
+
+# Install Python dependencies separately (for better caching)
+COPY requirements.txt .
+
+# Install base requirements with optimizations for ARM
+RUN pip install --no-cache-dir -r requirements.txt \
+    --extra-index-url https://www.piwheels.org/simple
+
+# Copy application code
+COPY . .
+
+# Create directories for data and models
+RUN mkdir -p data/up-fall data/ur-fall models logs
+
+# Use pip wheels optimized for ARM
+RUN pip install --no-cache-dir onnxruntime
+
+# Create a non-root user
+RUN useradd -m -u 1000 appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Default command - will be overridden by docker-compose
+CMD ["bash"]
+
+# Inference Service image optimized for edge devices
+FROM base as inference-service
+# Set environment variables for edge optimization
+ENV USE_GPU=false \
+    MODEL_PATH=/app/models/fall_detector_quantized.onnx
+
+CMD ["uvicorn", "src.inference_service.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Minimal dashboard for edge devices
+FROM base as dashboard
+# Set environment variables for edge optimization
+ENV STREAMLIT_SERVER_MAX_UPLOAD_SIZE=5 \
+    STREAMLIT_BROWSER_GATHER_USAGE_STATS=false \
+    STREAMLIT_SERVER_ENABLE_CORS=false
+
+CMD ["streamlit", "run", "src/dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]

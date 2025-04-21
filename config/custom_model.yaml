@@ -1,0 +1,98 @@
+# Custom Model Architecture Configuration for EdgeVision-Guard
+
+model_name: "custom_fall_detector"
+model_version: "1.0.0"
+
+# Base architecture
+base_architecture: "mobilenetv3_lstm"  # Options: mobilenetv3_lstm, resnet_lstm, efficientnet_transformer
+
+# Input configuration
+input:
+  sequence_length: 30
+  feature_size: 51  # 17 keypoints * 3 (x, y, confidence)
+  channels: 1
+
+# Feature extractor configuration
+feature_extractor:
+  type: "mobilenetv3"  # Options: mobilenetv3, resnet18, efficientnet-b0
+  variant: "small"     # Options for mobilenetv3: small, large
+  pretrained: true
+  freeze_backbone: false
+  output_features: 128
+  dropout: 0.5
+  
+  # Custom layers (appended after backbone)
+  custom_layers:
+    - type: "linear"
+      in_features: 576  # Depends on backbone
+      out_features: 128
+    - type: "activation"
+      function: "hardswish"
+    - type: "dropout"
+      p: 0.5
+
+# Sequence model configuration
+sequence_model:
+  type: "lstm"  # Options: lstm, gru, transformer
+  hidden_size: 128
+  num_layers: 2
+  bidirectional: true
+  dropout: 0.5
+  
+  # For transformer only
+  transformer_config:
+    num_heads: 8
+    dim_feedforward: 512
+    activation: "gelu"
+
+# Classification head configuration
+classifier:
+  num_classes: 3  # 0=No Fall, 1=Fall, 2=Other
+  hidden_layers:
+    - size: 128
+      activation: "relu"
+      dropout: 0.5
+  use_softmax: true
+
+# Optimization parameters
+optimization:
+  quantization:
+    enabled: true
+    quantize_weights: true
+    quantize_activations: true
+    per_channel: true
+    bit_width: 8  # 8 for INT8, 16 for INT16
+  
+  pruning:
+    enabled: false
+    target_sparsity: 0.5
+    pruning_schedule: "polynomial_decay"
+  
+  distillation:
+    enabled: false
+    teacher_model: "models/fall_detector_teacher.pth"
+    alpha: 0.5  # Weight for distillation loss
+
+# Hardware targeting
+hardware_target:
+  platform: "jetson_nano"  # Options: generic, jetson_nano, raspberry_pi, intel_ncs
+  use_tensorrt: true
+  use_dlprim: false
+  batch_size: 1
+  
+  # Custom TensorRT settings
+  tensorrt:
+    workspace_size: 1073741824  # 1GB
+    fp16_mode: true
+    int8_mode: true
+    strict_type_constraints: false
+
+# Export configurations
+export:
+  formats:
+    - onnx
+    - tensorrt
+    - tflite
+  onnx_opset: 14
+  include_preprocessing: true
+  simplify_onnx: true

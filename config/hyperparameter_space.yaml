@@ -1,0 +1,160 @@
+# Hyperparameter Search Space Configuration for EdgeVision-Guard
+
+experiment_name: "fall_detection_hyperopt"
+max_trials: 50
+search_algorithm: "bayesian"  # Options: random, grid, bayesian
+optimization_metric: "val_f1"
+optimization_direction: "maximize"
+
+# Compute resources per trial
+resources:
+  cpu_per_trial: 2
+  gpu_per_trial: 0.5
+  memory_per_trial: "4G"
+
+# Early stopping configuration
+early_stopping:
+  enabled: true
+  patience: 10
+  metric: "val_loss"
+  direction: "minimize"
+
+# Hyperparameter search space
+search_space:
+  # Model architecture
+  model:
+    feature_extractor:
+      type:
+        categorical: ["mobilenetv3", "efficientnet"]
+      variant:
+        conditional:
+          parent: "model.feature_extractor.type"
+          values:
+            mobilenetv3: 
+              categorical: ["small", "large"]
+            efficientnet:
+              categorical: ["b0", "b1", "b2"]
+      output_features:
+        categorical: [64, 128, 256]
+      dropout:
+        uniform: [0.2, 0.7]
+    
+    sequence_model:
+      type:
+        categorical: ["lstm", "gru", "transformer"]
+      hidden_size:
+        quantized_log_uniform: [32, 256, 32]  # min, max, step
+      num_layers:
+        integer: [1, 4]
+      bidirectional:
+        categorical: [true, false]
+      
+      # Transformer-specific parameters (used only when sequence_model.type = transformer)
+      transformer_config:
+        num_heads:
+          conditional:
+            parent: "model.sequence_model.type"
+            values:
+              transformer:
+                categorical: [4, 8, 16]
+        
+        dim_feedforward:
+          conditional:
+            parent: "model.sequence_model.type"
+            values:
+              transformer:
+                categorical: [256, 512, 1024]
+    
+    classifier:
+      hidden_layers:
+        categorical: [
+          [],                                    # No hidden layers
+          [{"size": 128}],                       # One hidden layer
+          [{"size": 256}, {"size": 128}]         # Two hidden layers
+        ]
+  
+  # Training parameters
+  training:
+    batch_size:
+      categorical: [16, 32, 64, 128]
+    
+    optimizer:
+      type:
+        categorical: ["adam", "adamw", "sgd"]
+      
+      learning_rate:
+        log_uniform: [1e-5, 1e-2]
+      
+      weight_decay:
+        log_uniform: [1e-6, 1e-3]
+      
+      # SGD-specific parameters
+      momentum:
+        conditional:
+          parent: "training.optimizer.type"
+          values:
+            sgd:
+              uniform: [0.8, 0.99]
+    
+    scheduler:
+      type:
+        categorical: ["cosine", "step", "plateau", "none"]
+      
+      step_size:
+        conditional:
+          parent: "training.scheduler.type"
+          values:
+            step:
+              integer: [5, 15]
+      
+      gamma:
+        conditional:
+          parent: "training.scheduler.type"
+          values:
+            step:
+              uniform: [0.1, 0.5]
+            plateau:
+              uniform: [0.1, 0.5]
+      
+      patience:
+        conditional:
+          parent: "training.scheduler.type"
+          values:
+            plateau:
+              integer: [2, 10]
+    
+    augmentation:
+      keypoint_noise:
+        uniform: [0.0, 0.05]
+      
+      sequence_dropout:
+        uniform: [0.0, 0.3]
+      
+      time_stretch:
+        uniform: [0.8, 1.2]
+
+# Fixed parameters (not optimized)
+fixed_parameters:
+  model:
+    input:
+      sequence_length: 30
+      feature_size: 51
+    
+    classifier:
+      num_classes: 3
+  
+  training:
+    epochs: 50
+    early_stopping_patience: 15
+    validation_split: 0.2
+    test_split: 0.1
+
+# Constraints on parameter combinations
+constraints:
+  - name: "transformer_hidden_size_divisible_by_heads"
+    description: "For transformer models, hidden_size must be divisible by num_heads"
+    check: "model.sequence_model.type == 'transformer' and model.sequence_model.hidden_size % model.sequence_model.transformer_config.num_heads == 0"
+  
+  - name: "reasonable_batch_size_for_transformer"
+    description: "Use smaller batch sizes for transformer models which use more memory"
+    check: "not (model.sequence_model.type == 'transformer' and training.batch_size > 64)"

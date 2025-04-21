@@ -1,0 +1,249 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edgevision-inference
+  labels:
+    app: edgevision-guard
+    component: inference
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: edgevision-guard
+      component: inference
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: edgevision-guard
+        component: inference
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: inference-service
+        image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/edgevision-guard-inference:${IMAGE_TAG:-latest}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: MODEL_PATH
+          value: /app/models/fall_detector.onnx
+        - name: USE_GPU
+          value: "${USE_GPU:-false}"
+        - name: CONFIDENCE_THRESHOLD
+          value: "${CONFIDENCE_THRESHOLD:-0.7}"
+        - name: METRICS_ENABLED
+          value: "true"
+        - name: METRICS_PORT
+          value: "9090"
+        volumeMounts:
+        - name: models-volume
+          mountPath: /app/models
+        - name: config-volume
+          mountPath: /app/config
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: models-volume
+        persistentVolumeClaim:
+          claimName: edgevision-models-pvc
+      - name: config-volume
+        configMap:
+          name: edgevision-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edgevision-dashboard
+  labels:
+    app: edgevision-guard
+    component: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edgevision-guard
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: edgevision-guard
+        component: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/edgevision-guard-dashboard:${IMAGE_TAG:-latest}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8501
+          name: http
+        env:
+        - name: INFERENCE_SERVICE_URL
+          value: "http://edgevision-inference-service:8000"
+        - name: WEBSOCKET_URL
+          value: "ws://edgevision-inference-service:8000/ws"
+        volumeMounts:
+        - name: models-volume
+          mountPath: /app/models
+          readOnly: true
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+      volumes:
+      - name: models-volume
+        persistentVolumeClaim:
+          claimName: edgevision-models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edgevision-inference-service
+  labels:
+    app: edgevision-guard
+    component: inference
+spec:
+  selector:
+    app: edgevision-guard
+    component: inference
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
+  - port: 9090
+    targetPort: 9090
+    name: metrics
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edgevision-dashboard-service
+  labels:
+    app: edgevision-guard
+    component: dashboard
+spec:
+  selector:
+    app: edgevision-guard
+    component: dashboard
+  ports:
+  - port: 8501
+    targetPort: 8501
+    name: http
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: edgevision-models-pvc
+  labels:
+    app: edgevision-guard
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: edgevision-config
+data:
+  .env: |
+    # Model configuration
+    MODEL_NAME=fall_detector
+    MODEL_VERSION=1.0.0
+    NUM_CLASSES=3
+    HIDDEN_SIZE=128
+    NUM_LAYERS=2
+    SEQUENCE_LENGTH=30
+    INPUT_SIZE=51
+
+    # Inference service
+    API_HOST=0.0.0.0
+    API_PORT=8000
+    CONFIDENCE_THRESHOLD=0.7
+    USE_GPU=false
+    METRICS_ENABLED=true
+    METRICS_PORT=9090
+
+    # Dashboard
+    DASHBOARD_PORT=8501
+    INFERENCE_SERVICE_URL=http://edgevision-inference-service:8000
+    WEBSOCKET_URL=ws://edgevision-inference-service:8000/ws
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: edgevision-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - dashboard.edgevision.example.com
+    - api.edgevision.example.com
+    secretName: edgevision-tls
+  rules:
+  - host: dashboard.edgevision.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: edgevision-dashboard-service
+            port:
+              number: 8501
+  - host: api.edgevision.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: edgevision-inference-service
+            port:
+              number: 8000

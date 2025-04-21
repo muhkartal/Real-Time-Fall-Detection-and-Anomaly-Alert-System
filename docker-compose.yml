@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  inference-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: inference-service
+    image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/${IMAGE_NAME:-edgevision-guard}-inference:${IMAGE_TAG:-latest}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./.env:/app/.env
+    environment:
+      - MODEL_PATH=/app/models/fall_detector.onnx
+      - USE_GPU=${USE_GPU:-false}
+      - CONFIDENCE_THRESHOLD=${CONFIDENCE_THRESHOLD:-0.7}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: dashboard
+    image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/${IMAGE_NAME:-edgevision-guard}-dashboard:${IMAGE_TAG:-latest}
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./models:/app/models
+      - ./.env:/app/.env
+    environment:
+      - INFERENCE_SERVICE_URL=http://inference-service:8000
+      - WEBSOCKET_URL=ws://inference-service:8000/ws
+    depends_on:
+      - inference-service
+    restart: unless-stopped
+
+  data-pipeline:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: base
+    image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/${IMAGE_NAME:-edgevision-guard}-pipeline:${IMAGE_TAG:-latest}
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    command: python src/data_ingest.py --dataset up-fall --output data/up-fall
+    profiles:
+      - data-processing
+
+  training:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: training
+    image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/${IMAGE_NAME:-edgevision-guard}-training:${IMAGE_TAG:-latest}
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    environment:
+      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+              driver: nvidia
+    command: python src/train.py --epochs ${EPOCHS:-30} --batch-size ${BATCH_SIZE:-32} --device ${DEVICE:-cuda}
+    profiles:
+      - training
+
+  onnx-export:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: base
+    image: ${REGISTRY:-ghcr.io}/${ORGANIZATION:-yourusername}/${IMAGE_NAME:-edgevision-guard}-onnx:${IMAGE_TAG:-latest}
+    volumes:
+      - ./models:/app/models
+      - ./.env:/app/.env
+    command: python src/onnx_export.py --model-path /app/models/fall_detector.pth --output /app/models/fall_detector.onnx --quantize
+    profiles:
+      - model-export
