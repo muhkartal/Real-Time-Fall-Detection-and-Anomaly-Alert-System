@@ -1,10 +1,10 @@
 # EdgeVision-Guard
 
-## Enterprise-Grade Fall Detection & Anomaly Alert Platform
+## Fall Detection & Anomaly Alert Platform
 
 EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly alert platform designed for healthcare facilities, workplace safety monitoring, and smart living environments. The system leverages state-of-the-art computer vision and deep learning technologies to provide accurate, explainable, and privacy-preserving monitoring with deployment flexibility across cloud infrastructure and edge devices.
 
-![EdgeVision-Guard Enterprise Platform](https://via.placeholder.com/800x400?text=EdgeVision-Guard+Enterprise+Platform)
+![EdgeVision-Guard Platform](https://via.placeholder.com/800x400?text=EdgeVision-Guard+Enterprise+Platform)
 
 [![CI Status](https://github.com/yourusername/EdgeVision-Guard/workflows/CI/badge.svg)](https://github.com/yourusername/EdgeVision-Guard/actions)
 [![CD Status](https://github.com/yourusername/EdgeVision-Guard/workflows/CD/badge.svg)](https://github.com/yourusername/EdgeVision-Guard/actions)
@@ -21,7 +21,7 @@ EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly al
 - **Privacy-Preserving Monitoring**: Skeleton-based analysis ensures privacy by avoiding raw video storage while maintaining monitoring effectiveness.
 - **Lower Total Cost of Ownership**: Edge deployment options reduce cloud computing costs and bandwidth requirements.
 
-## Enterprise Features
+## Features
 
 ### Technical Architecture
 
@@ -31,13 +31,13 @@ EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly al
   - Hierarchical feature fusion for robust anomaly detection
 
 - **Multi-Tier Deployment Architecture**:
-  - Cloud-tier with horizontal scaling for enterprise monitoring centers
+  - Cloud-tier with horizontal scaling for monitoring centers
   - Edge-tier with optimized inference for on-premise deployment
   - Centralized model registry with versioning and A/B deployment capabilities
 
-- **Enterprise Integration Points**:
+- **Integration Points**:
   - REST API and WebSockets for real-time data streams
-  - Kafka connector for enterprise event bus integration (optional module)
+  - Kafka connector for event bus integration (optional module)
   - MQTT support for IoT/edge device communication
   - Webhook notifications for alerting systems
 
@@ -48,7 +48,7 @@ EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly al
   - GDPR-ready with data minimization principles
   - HIPAA-compliant deployment options for healthcare settings
 
-- **Enterprise Scalability**:
+- **Scalability**:
   - Microservice architecture for independent scaling
   - Container orchestration with Kubernetes support
   - Multi-region deployment ready
@@ -80,7 +80,7 @@ EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly al
   | False Positive Rate | 0.04 | 0.05 | 0.06 |
   | False Negative Rate | 0.09 | 0.11 | 0.12 |
 
-## Enterprise Deployment Guide
+## Deployment Guide
 
 ### System Requirements
 
@@ -106,7 +106,7 @@ EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly al
 
 ### Installation Options
 
-#### 1. Enterprise Docker Deployment
+#### 1. Docker Deployment
 
 ```bash
 # Clone the repository
@@ -155,12 +155,12 @@ sudo systemctl start edgevision-guard.service
 ### Model Training & Customization
 
 ```bash
-# Download and preprocess enterprise datasets
+# Download and preprocess datasets
 python src/data_ingest.py --dataset up-fall --output data/up-fall
 python src/data_ingest.py --dataset ur-fall --output data/ur-fall
 python src/data_ingest.py --generate-keypoints --dataset up-fall --dataset ur-fall
 
-# Train with enterprise dataset
+# Train with dataset
 python src/train.py --epochs 100 --batch-size 64 --device cuda --output-dir models/
 
 # Fine-tune on custom data
@@ -174,7 +174,7 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
 
 ## Architecture Deep Dive
 
-![Enterprise Architecture Diagram](https://via.placeholder.com/800x500?text=EdgeVision-Guard+Enterprise+Architecture)
+![Architecture Diagram](https://via.placeholder.com/800x500?text=EdgeVision-Guard+Enterprise+Architecture)
 
 ### Component Breakdown
 
@@ -195,7 +195,7 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
    - Inference result caching for performance optimization
    - Horizontal scaling capabilities
 
-4. **Enterprise Dashboard**
+4. **Dashboard**
    - Role-based access control with SSO integration
    - Real-time monitoring with alert management
    - Historical data analytics with filtering and search
@@ -208,7 +208,7 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
    - Local buffering for network interruptions
    - OTA update capability
 
-## Enterprise Integration Examples
+## Integration Examples
 
 ### SIEM/Security System Integration
 
@@ -235,7 +235,7 @@ FHIR_SERVER_URL=https://fhir.hospital.org/api/fhir/r4
 FHIR_AUTH_HEADER=Bearer your-fhir-token
 ```
 
-### Enterprise Monitoring Integration
+### Monitoring Integration
 
 ```python
 # Prometheus metrics configuration
@@ -321,9 +321,9 @@ python src/model.py --custom-architecture config/custom_model.yaml
 python src/hyperopt.py --config config/hyperparameter_space.yaml
 ```
 
-## Enterprise Support
+## Support
 
-Enterprise support plans are available with:
+support plans are available with:
 
 - 24/7 technical support
 - SLA guarantees
