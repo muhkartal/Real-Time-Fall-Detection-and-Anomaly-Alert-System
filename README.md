@@ -4,10 +4,12 @@
 
 EdgeVision-Guard is a production-ready, real-time fall detection and anomaly alert platform designed for healthcare facilities, workplace safety monitoring, and smart living environments. The system leverages state-of-the-art computer vision and deep learning technologies to provide accurate, explainable, and privacy-preserving monitoring with deployment flexibility across cloud infrastructure and edge devices.
 
-![EdgeVision-Guard Platform](https://via.placeholder.com/800x400?text=EdgeVision-Guard+Platform)
+![EdgeVision-Guard Platform](images/main.png)
 
-[![CI Status](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/workflows/CI/badge.svg)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/actions)
-[![CD Status](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/workflows/CD/badge.svg)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/actions)
+[![Code Size](https://img.shields.io/github/languages/code-size/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)
+[![Last Commit](https://img.shields.io/github/last-commit/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/commits/main)
+[![Status](https://img.shields.io/badge/Status-Active-success)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)
+[![Demo](https://img.shields.io/badge/Demo-Available-informational)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
