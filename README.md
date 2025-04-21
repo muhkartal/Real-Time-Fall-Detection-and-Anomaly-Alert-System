@@ -2,9 +2,9 @@
 
 ## Fall Detection & Anomaly Alert Platform
 
-EdgeVision-Guard is an enterprise-ready, real-time fall detection and anomaly alert platform designed for healthcare facilities, workplace safety monitoring, and smart living environments. The system leverages state-of-the-art computer vision and deep learning technologies to provide accurate, explainable, and privacy-preserving monitoring with deployment flexibility across cloud infrastructure and edge devices.
+EdgeVision-Guard is a production-ready, real-time fall detection and anomaly alert platform designed for healthcare facilities, workplace safety monitoring, and smart living environments. The system leverages state-of-the-art computer vision and deep learning technologies to provide accurate, explainable, and privacy-preserving monitoring with deployment flexibility across cloud infrastructure and edge devices.
 
-![EdgeVision-Guard Platform](https://via.placeholder.com/800x400?text=EdgeVision-Guard+Enterprise+Platform)
+![EdgeVision-Guard Platform](https://via.placeholder.com/800x400?text=EdgeVision-Guard+Platform)
 
 [![CI Status](https://github.com/yourusername/EdgeVision-Guard/workflows/CI/badge.svg)](https://github.com/yourusername/EdgeVision-Guard/actions)
 [![CD Status](https://github.com/yourusername/EdgeVision-Guard/workflows/CD/badge.svg)](https://github.com/yourusername/EdgeVision-Guard/actions)
@@ -174,7 +174,7 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
 
 ## Architecture Deep Dive
 
-![Architecture Diagram](https://via.placeholder.com/800x500?text=EdgeVision-Guard+Enterprise+Architecture)
+![Architecture Diagram](https://via.placeholder.com/800x500?text=EdgeVision-Guard+Architecture)
 
 ### Component Breakdown
 
@@ -210,15 +210,15 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
 
 ## Integration Examples
 
-### SIEM/Security System Integration
+### Security System Integration
 
 ```python
-# Configure webhook notifications to your SIEM
-WEBHOOK_URL = "https://your-siem-system.com/api/events"
+# Configure webhook notifications to your security system
+WEBHOOK_URL = "https://your-security-system.com/api/events"
 WEBHOOK_AUTH = {"Authorization": "Bearer your-api-token"}
 
 # In your .env file
-ALERT_WEBHOOK_URL=https://your-siem-system.com/api/events
+ALERT_WEBHOOK_URL=https://your-security-system.com/api/events
 ALERT_WEBHOOK_AUTH_HEADER=Bearer your-api-token
 ```
 
@@ -323,15 +323,14 @@ python src/hyperopt.py --config config/hyperparameter_space.yaml
 
 ## Support
 
-support plans are available with:
+Professional support plans are available with:
 
-- 24/7 technical support
-- SLA guarantees
+- Technical support
 - Custom model development
 - On-premise deployment assistance
 - Security assessments
 
-Contact enterprise-sales@yourdomain.com for more information.
+Contact sales@yourdomain.com for more information.
 
 ## Security Considerations
 
