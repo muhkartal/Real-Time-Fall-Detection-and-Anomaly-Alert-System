@@ -14,14 +14,6 @@ EdgeVision-Guard is a production-ready, real-time fall detection and anomaly ale
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
-## Business Value
-
-- **Reduce Response Time to Critical Incidents**: Real-time anomaly detection with immediate alerts enables swift response, potentially saving lives in healthcare settings.
-- **Minimize Workplace Incidents**: Proactive detection of unsafe behaviors or situations before accidents occur.
-- **Optimize Staffing Resources**: Enable more efficient deployment of healthcare and safety personnel through prioritized alerts.
-- **Reduce Liability Exposure**: Documented monitoring and response trails for compliance and risk management.
-- **Privacy-Preserving Monitoring**: Skeleton-based analysis ensures privacy by avoiding raw video storage while maintaining monitoring effectiveness.
-- **Lower Total Cost of Ownership**: Edge deployment options reduce cloud computing costs and bandwidth requirements.
 
 ## Features
 
