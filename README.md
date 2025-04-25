@@ -1,7 +1,14 @@
 # sentinelAI-safetyMonitoring
 
 <div align="center">
-  <img src="images/main.png" alt="EdgeVision-Guard Platform" width="800">
+<div style="height: 200px; overflow: hidden; display: flex; justify-content: center;">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/main-dark.png" width="500" style="object-fit: cover; object-position: center 40%;">
+    <source media="(prefers-color-scheme: light)" srcset="images/main-light.png" width="500" style="object-fit: cover; object-position: center 40%;">
+    <img alt="sentinelAI banner" src="images/main-dark.png" width="500" style="object-fit: cover; object-position: center 40%;">
+  </picture>
+</div>
+
   <h3>Real-Time Fall Detection & Anomaly Alert Platform</h3>
 
 [![Code Size](https://img.shields.io/github/languages/code-size/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)
