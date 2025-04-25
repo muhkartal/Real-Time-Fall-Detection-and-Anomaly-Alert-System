@@ -1,10 +1,14 @@
 # EdgeVision-Guard
 
-## Fall Detection & Anomaly Alert Platform
+## Real-Time Fall Detection & Anomaly Alert Platform
 
-EdgeVision-Guard is a production-ready, real-time fall detection and anomaly alert platform designed for healthcare facilities, workplace safety monitoring, and smart living environments. The system leverages state-of-the-art computer vision and deep learning technologies to provide accurate, explainable, and privacy-preserving monitoring with deployment flexibility across cloud infrastructure and edge devices.
+EdgeVision-Guard is a production-ready monitoring system designed for healthcare facilities, workplace safety, and smart living environments. The platform uses advanced computer vision and deep learning to deliver accurate, explainable, and privacy-preserving detection with flexible deployment across cloud infrastructure and edge devices.
 
-![EdgeVision-Guard Platform](images/main.png)
+<div align="center">
+  <img src="images/main.png" alt="EdgeVision-Guard Platform" width="800">
+</div>
+
+<div align="center">
 
 [![Code Size](https://img.shields.io/github/languages/code-size/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)
 [![Last Commit](https://img.shields.io/github/last-commit/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/commits/main)
@@ -14,89 +18,121 @@ EdgeVision-Guard is a production-ready, real-time fall detection and anomaly ale
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
+</div>
+
+## Table of Contents
+
+-  [Features](#features)
+   -  [Technical Architecture](#technical-architecture)
+   -  [Performance & Optimization](#performance--optimization)
+-  [Deployment Guide](#deployment-guide)
+   -  [System Requirements](#system-requirements)
+   -  [Installation Options](#installation-options)
+   -  [Model Training & Customization](#model-training--customization)
+-  [Architecture Deep Dive](#architecture-deep-dive)
+   -  [Component Breakdown](#component-breakdown)
+-  [Integration Examples](#integration-examples)
+-  [Administration & Maintenance](#administration--maintenance)
+-  [Development & Customization](#development--customization)
+-  [Support](#support)
+-  [Security Considerations](#security-considerations)
+-  [Project Structure](#project-structure)
+-  [Compliance & Regulations](#compliance--regulations)
+-  [License](#license)
+-  [Acknowledgements](#acknowledgements)
 
 ## Features
 
 ### Technical Architecture
 
-- **Hybrid Computer Vision Pipeline**: 
-  - MobileNetV3-Small extracts spatial features from MediaPipe skeleton keypoints
-  - Bidirectional LSTM captures temporal patterns and contextual information
-  - Hierarchical feature fusion for robust anomaly detection
+-  **Advanced Computer Vision Pipeline**
 
-- **Multi-Tier Deployment Architecture**:
-  - Cloud-tier with horizontal scaling for monitoring centers
-  - Edge-tier with optimized inference for on-premise deployment
-  - Centralized model registry with versioning and A/B deployment capabilities
+   -  MobileNetV3-Small extracts spatial features from MediaPipe skeleton keypoints
+   -  Bidirectional LSTM captures temporal patterns and contextual information
+   -  Hierarchical feature fusion for robust anomaly detection
 
-- **Integration Points**:
-  - REST API and WebSockets for real-time data streams
-  - Kafka connector for event bus integration (optional module)
-  - MQTT support for IoT/edge device communication
-  - Webhook notifications for alerting systems
+-  **Multi-Tier Deployment Architecture**
 
-- **Security & Compliance**:
-  - Role-based access control for dashboard and APIs
-  - Audit logging for all system activities and alerts
-  - Data encryption in-transit and at-rest
-  - GDPR-ready with data minimization principles
-  - HIPAA-compliant deployment options for healthcare settings
+   -  Cloud-tier with horizontal scaling for monitoring centers
+   -  Edge-tier with optimized inference for on-premise deployment
+   -  Centralized model registry with versioning and A/B deployment capabilities
 
-- **Scalability**:
-  - Microservice architecture for independent scaling
-  - Container orchestration with Kubernetes support
-  - Multi-region deployment ready
-  - Configurable retention policies
+-  **Comprehensive Integration Options**
+
+   -  REST API and WebSockets for real-time data streams
+   -  Kafka connector for event bus integration
+   -  MQTT support for IoT/edge device communication
+   -  Webhook notifications for alerting systems
+
+-  **Enterprise-Grade Security & Compliance**
+
+   -  Role-based access control for dashboard and APIs
+   -  Audit logging for all system activities and alerts
+   -  Data encryption in-transit and at-rest
+   -  GDPR-ready with data minimization principles
+   -  HIPAA-compliant deployment options for healthcare settings
+
+-  **Scalable Infrastructure**
+   -  Microservice architecture for independent scaling
+   -  Container orchestration with Kubernetes support
+   -  Multi-region deployment ready
+   -  Configurable retention policies
 
 ### Performance & Optimization
 
-- **Model Optimization**:
-  - INT8 quantization reduces model size by 75% without significant accuracy loss
-  - TensorRT acceleration for NVIDIA platforms increases throughput by 3x
-  - ARM-optimized inference for Raspberry Pi and Jetson Nano devices
-  - Support for hardware acceleration (CUDA, OpenVINO, CoreML)
+-  **Model Optimization Techniques**
 
-- **Production Metrics**:
-  | Deployment Target | Latency | Throughput | Power Consumption |
-  |-------------------|---------|------------|-------------------|
-  | Cloud (GPU) | 12ms | 83 FPS | N/A |
-  | Cloud (CPU) | 45ms | 22 FPS | N/A |
-  | Jetson Nano | 78ms | 12 FPS | 5W |
-  | Raspberry Pi 4 | 126ms | 8 FPS | 3.2W |
+   -  INT8 quantization reduces model size by 75% without significant accuracy loss
+   -  TensorRT acceleration for NVIDIA platforms increases throughput by 3x
+   -  ARM-optimized inference for Raspberry Pi and Jetson Nano devices
+   -  Support for hardware acceleration (CUDA, OpenVINO, CoreML)
 
-- **Model Accuracy**:
-  | Metric | UP-Fall Dataset | URFall Dataset | Real-World Validation |
-  |--------|----------------|---------------|------------------------|
-  | Precision | 0.94 | 0.92 | 0.91 |
-  | Recall | 0.91 | 0.89 | 0.88 |
-  | F1 Score | 0.92 | 0.90 | 0.89 |
-  | ROC-AUC | 0.97 | 0.95 | 0.94 |
-  | False Positive Rate | 0.04 | 0.05 | 0.06 |
-  | False Negative Rate | 0.09 | 0.11 | 0.12 |
+-  **Production Performance Metrics**
+
+   | Deployment Target | Latency | Throughput | Power Consumption |
+   | ----------------- | ------- | ---------- | ----------------- |
+   | Cloud (GPU)       | 12ms    | 83 FPS     | N/A               |
+   | Cloud (CPU)       | 45ms    | 22 FPS     | N/A               |
+   | Jetson Nano       | 78ms    | 12 FPS     | 5W                |
+   | Raspberry Pi 4    | 126ms   | 8 FPS      | 3.2W              |
+
+-  **Model Accuracy Benchmarks**
+
+   | Metric              | UP-Fall Dataset | URFall Dataset | Real-World Validation |
+   | ------------------- | --------------- | -------------- | --------------------- |
+   | Precision           | 0.94            | 0.92           | 0.91                  |
+   | Recall              | 0.91            | 0.89           | 0.88                  |
+   | F1 Score            | 0.92            | 0.90           | 0.89                  |
+   | ROC-AUC             | 0.97            | 0.95           | 0.94                  |
+   | False Positive Rate | 0.04            | 0.05           | 0.06                  |
+   | False Negative Rate | 0.09            | 0.11           | 0.12                  |
 
 ## Deployment Guide
 
 ### System Requirements
 
 #### Production Environment
-- **Cloud Deployment**:
-  - Kubernetes 1.22+ or Docker Swarm
-  - 4+ vCPUs, 8+ GB RAM per node
-  - NVIDIA GPU (optional but recommended)
-  - Redis 6.0+ for caching and pub/sub
-  - S3-compatible object storage for model artifacts
-  
-- **Edge Deployment**:
-  - Raspberry Pi 4 (4GB+ RAM) or NVIDIA Jetson Nano
-  - 32GB+ SD card or SSD
-  - USB camera or RTSP IP camera
-  - Wired network connection recommended
+
+-  **Cloud Deployment**
+
+   -  Kubernetes 1.22+ or Docker Swarm
+   -  4+ vCPUs, 8+ GB RAM per node
+   -  NVIDIA GPU (optional but recommended)
+   -  Redis 6.0+ for caching and pub/sub
+   -  S3-compatible object storage for model artifacts
+
+-  **Edge Deployment**
+   -  Raspberry Pi 4 (4GB+ RAM) or NVIDIA Jetson Nano
+   -  32GB+ SD card or SSD
+   -  USB camera or RTSP IP camera
+   -  Wired network connection recommended
 
 #### Development Environment
-- Python 3.11+
-- CUDA 11.7+ and cuDNN 8.5+ (for GPU training)
-- Docker and docker-compose
-- 16GB+ RAM recommended for training
+
+-  Python 3.11+
+-  CUDA 11.7+ and cuDNN 8.5+ (for GPU training)
+-  Docker and docker-compose
+-  16GB+ RAM recommended for training
 
 ### Installation Options
 
@@ -160,7 +196,7 @@ python src/train.py --epochs 100 --batch-size 64 --device cuda --output-dir mode
 # Fine-tune on custom data
 python src/train.py --transfer-learning --base-model models/fall_detector.pth \
   --custom-data path/to/custom/data --epochs 20
-  
+
 # Export to production-ready ONNX format
 python src/onnx_export.py --model-path models/fall_detector.pth \
   --output models/fall_detector.onnx --quantize --benchmark
@@ -168,39 +204,45 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
 
 ## Architecture Deep Dive
 
-![Architecture Diagram](https://via.placeholder.com/800x500?text=EdgeVision-Guard+Architecture)
+<div align="center">
+  <img src="images/architecture.png" alt="Architecture Diagram" width="800">
+</div>
 
 ### Component Breakdown
 
 1. **Data Ingestion Layer**
-   - Supports multiple video sources (RTSP, HTTP, local camera)
-   - Frame sampling and preprocessing pipeline
-   - Privacy-first approach with immediate skeleton extraction
+
+   -  Supports multiple video sources (RTSP, HTTP, local camera)
+   -  Frame sampling and preprocessing pipeline
+   -  Privacy-first approach with immediate skeleton extraction
 
 2. **ML Processing Pipeline**
-   - Modular architecture with pluggable components
-   - Feature extraction with MobileNetV3-Small (optimized for mobile/edge)
-   - Temporal sequence processing with bidirectional LSTM
-   - Anomaly detection with confidence scoring
+
+   -  Modular architecture with pluggable components
+   -  Feature extraction with MobileNetV3-Small (optimized for mobile/edge)
+   -  Temporal sequence processing with bidirectional LSTM
+   -  Anomaly detection with confidence scoring
 
 3. **Inference Service**
-   - REST API with OpenAPI documentation
-   - WebSocket streaming for real-time applications
-   - Inference result caching for performance optimization
-   - Horizontal scaling capabilities
+
+   -  REST API with OpenAPI documentation
+   -  WebSocket streaming for real-time applications
+   -  Inference result caching for performance optimization
+   -  Horizontal scaling capabilities
 
 4. **Dashboard**
-   - Role-based access control with SSO integration
-   - Real-time monitoring with alert management
-   - Historical data analytics with filtering and search
-   - Explainable AI visualizations with Grad-CAM
-   - Configurable alert thresholds and notification rules
+
+   -  Role-based access control with SSO integration
+   -  Real-time monitoring with alert management
+   -  Historical data analytics with filtering and search
+   -  Explainable AI visualizations with Grad-CAM
+   -  Configurable alert thresholds and notification rules
 
 5. **Edge Runtime**
-   - Optimized container for constrained environments
-   - Watchdog monitoring with auto-recovery
-   - Local buffering for network interruptions
-   - OTA update capability
+   -  Optimized container for constrained environments
+   -  Watchdog monitoring with auto-recovery
+   -  Local buffering for network interruptions
+   -  OTA update capability
 
 ## Integration Examples
 
@@ -247,11 +289,13 @@ GRAFANA_URL=https://grafana.yourdomain.com
 
 EdgeVision-Guard exposes Prometheus metrics at `/metrics` for monitoring:
 
-- `edgevision_inference_requests_total`: Total number of inference requests
-- `edgevision_inference_latency_seconds`: Histogram of inference latencies
-- `edgevision_anomaly_detections_total`: Total number of anomalies detected
-- `edgevision_false_positive_rate`: Estimated false positive rate
-- `edgevision_model_version`: Current model version in use
+| Metric                                 | Description                        |
+| -------------------------------------- | ---------------------------------- |
+| `edgevision_inference_requests_total`  | Total number of inference requests |
+| `edgevision_inference_latency_seconds` | Histogram of inference latencies   |
+| `edgevision_anomaly_detections_total`  | Total number of anomalies detected |
+| `edgevision_false_positive_rate`       | Estimated false positive rate      |
+| `edgevision_model_version`             | Current model version in use       |
 
 ### Backup & Disaster Recovery
 
@@ -319,19 +363,19 @@ python src/hyperopt.py --config config/hyperparameter_space.yaml
 
 Professional support plans are available with:
 
-- Technical support
-- Custom model development
-- On-premise deployment assistance
-- Security assessments
+-  Technical support with guaranteed response times
+-  Custom model development and tuning services
+-  On-premise deployment assistance
+-  Security assessments and compliance consulting
 
 Contact sales@yourdomain.com for more information.
 
 ## Security Considerations
 
-- All endpoints should be secured behind authentication
-- API keys should be rotated regularly
-- For medical or healthcare deployments, ensure HIPAA compliance
-- Regular security audits are recommended
+-  All endpoints should be secured behind authentication
+-  API keys should be rotated regularly
+-  For medical or healthcare deployments, ensure HIPAA compliance
+-  Regular security audits are recommended
 
 ## Project Structure
 
@@ -340,7 +384,7 @@ EdgeVision-Guard/
 ├─ README.md                      # This file
 ├─ requirements.txt               # Production dependencies
 ├─ requirements-dev.txt           # Development dependencies
-├─ data/                          # Data directory 
+├─ data/                          # Data directory
 │  └─ (download script populates)
 ├─ src/                           # Source code
 │  ├─ __init__.py                 # Package initialization
@@ -374,19 +418,28 @@ EdgeVision-Guard/
 ## Compliance & Regulations
 
 EdgeVision-Guard is designed with compliance in mind:
-- GDPR: Data minimization through skeleton-based analysis
-- HIPAA: Protected health information safeguards 
-- ISO 27001: Information security management
-- OSHA: Workplace safety monitoring compliance
+
+| Regulation | Compliance Approach                               |
+| ---------- | ------------------------------------------------- |
+| GDPR       | Data minimization through skeleton-based analysis |
+| HIPAA      | Protected health information safeguards           |
+| ISO 27001  | Information security management                   |
+| OSHA       | Workplace safety monitoring compliance            |
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
-- [UP-Fall Detection Dataset](https://sites.google.com/up.edu.mx/har-up/)
-- [UR Fall Detection Dataset](http://fenix.univ.rzeszow.pl/~mkepski/ds/uf.html)
-- [MediaPipe Pose](https://google.github.io/mediapipe/solutions/pose)
-- [PyTorch](https://pytorch.org/)
-- [ONNX Runtime](https://onnxruntime.ai/)
+-  [UP-Fall Detection Dataset](https://sites.google.com/up.edu.mx/har-up/)
+-  [UR Fall Detection Dataset](http://fenix.univ.rzeszow.pl/~mkepski/ds/uf.html)
+-  [MediaPipe Pose](https://google.github.io/mediapipe/solutions/pose)
+-  [PyTorch](https://pytorch.org/)
+-  [ONNX Runtime](https://onnxruntime.ai/)
+
+---
+
+<div align="center">
+  <p>Developed by Muhammad Ibrahim Kartal | <a href="https://kartal.dev">kartal.dev</a></p>
+</div>
