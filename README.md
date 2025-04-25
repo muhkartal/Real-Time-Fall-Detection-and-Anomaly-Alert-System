@@ -3,9 +3,9 @@
 <div align="center">
 <div style="height: 200px; overflow: hidden; display: flex; justify-content: center;">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="images/main-dark.png" width="500" style="object-fit: cover; object-position: center 40%;">
-    <source media="(prefers-color-scheme: light)" srcset="images/main-light.png" width="500" style="object-fit: cover; object-position: center 40%;">
-    <img alt="sentinelAI banner" src="images/main-dark.png" width="500" style="object-fit: cover; object-position: center 40%;">
+    <source media="(prefers-color-scheme: dark)" srcset="images/main-dark.png" width="750" style="object-fit: cover; object-position: center 40%;">
+    <source media="(prefers-color-scheme: light)" srcset="images/main-light.png" width="750" style="object-fit: cover; object-position: center 40%;">
+    <img alt="sentinelAI banner" src="images/main-dark.png" width="750" style="object-fit: cover; object-position: center 40%;">
   </picture>
 </div>
 
