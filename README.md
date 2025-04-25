@@ -1,14 +1,8 @@
 # EdgeVision-Guard
 
-## Real-Time Fall Detection & Anomaly Alert Platform
-
-EdgeVision-Guard is a production-ready monitoring system designed for healthcare facilities, workplace safety, and smart living environments. The platform uses advanced computer vision and deep learning to deliver accurate, explainable, and privacy-preserving detection with flexible deployment across cloud infrastructure and edge devices.
-
 <div align="center">
   <img src="images/main.png" alt="EdgeVision-Guard Platform" width="800">
-</div>
-
-<div align="center">
+  <h3>Real-Time Fall Detection & Anomaly Alert Platform</h3>
 
 [![Code Size](https://img.shields.io/github/languages/code-size/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)
 [![Last Commit](https://img.shields.io/github/last-commit/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System)](https://github.com/muhkartal/Real-Time-Fall-Detection-and-Anomaly-Alert-System/commits/main)
@@ -20,26 +14,23 @@ EdgeVision-Guard is a production-ready monitoring system designed for healthcare
 
 </div>
 
-## Table of Contents
+## Overview
 
--  [Features](#features)
-   -  [Technical Architecture](#technical-architecture)
-   -  [Performance & Optimization](#performance--optimization)
--  [Deployment Guide](#deployment-guide)
-   -  [System Requirements](#system-requirements)
-   -  [Installation Options](#installation-options)
-   -  [Model Training & Customization](#model-training--customization)
--  [Architecture Deep Dive](#architecture-deep-dive)
-   -  [Component Breakdown](#component-breakdown)
--  [Integration Examples](#integration-examples)
--  [Administration & Maintenance](#administration--maintenance)
--  [Development & Customization](#development--customization)
--  [Support](#support)
--  [Security Considerations](#security-considerations)
--  [Project Structure](#project-structure)
--  [Compliance & Regulations](#compliance--regulations)
--  [License](#license)
--  [Acknowledgements](#acknowledgements)
+EdgeVision-Guard is a monitoring system using computer vision and deep learning to detect human falls and anomalies in real-time. The platform uses a privacy-preserving approach based on skeleton keypoints, making it suitable for healthcare facilities, workplace safety monitoring, and smart living environments.
+
+## Contents
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center" width="20%"><a href="#features"><b>Features</b></a></td>
+    <td align="center" width="20%"><a href="#deployment-guide"><b>Deployment</b></a></td>
+    <td align="center" width="20%"><a href="#architecture-deep-dive"><b>Architecture</b></a></td>
+    <td align="center" width="20%"><a href="#integration-examples"><b>Integration</b></a></td>
+    <td align="center" width="20%"><a href="#development--customization"><b>Development</b></a></td>
+  </tr>
+</table>
+</div>
 
 ## Features
 
@@ -64,7 +55,7 @@ EdgeVision-Guard is a production-ready monitoring system designed for healthcare
    -  MQTT support for IoT/edge device communication
    -  Webhook notifications for alerting systems
 
--  **Enterprise-Grade Security & Compliance**
+-  **Security & Privacy**
 
    -  Role-based access control for dashboard and APIs
    -  Audit logging for all system activities and alerts
@@ -140,7 +131,7 @@ EdgeVision-Guard is a production-ready monitoring system designed for healthcare
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/EdgeVision-Guard.git
+git clone https://github.com/muhkartal/EdgeVision-Guard.git
 cd EdgeVision-Guard
 
 # Configure environment variables
@@ -359,24 +350,6 @@ python src/model.py --custom-architecture config/custom_model.yaml
 python src/hyperopt.py --config config/hyperparameter_space.yaml
 ```
 
-## Support
-
-Professional support plans are available with:
-
--  Technical support with guaranteed response times
--  Custom model development and tuning services
--  On-premise deployment assistance
--  Security assessments and compliance consulting
-
-Contact sales@yourdomain.com for more information.
-
-## Security Considerations
-
--  All endpoints should be secured behind authentication
--  API keys should be rotated regularly
--  For medical or healthcare deployments, ensure HIPAA compliance
--  Regular security audits are recommended
-
 ## Project Structure
 
 ```
@@ -415,6 +388,13 @@ EdgeVision-Guard/
    └─ test_inference.py           # Inference tests
 ```
 
+## Security Considerations
+
+-  All endpoints should be secured behind authentication
+-  API keys should be rotated regularly
+-  For medical or healthcare deployments, ensure HIPAA compliance
+-  Regular security audits are recommended
+
 ## Compliance & Regulations
 
 EdgeVision-Guard is designed with compliance in mind:
@@ -441,5 +421,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <p>Developed by Muhammad Ibrahim Kartal | <a href="https://kartal.dev">kartal.dev</a></p>
+  <p>Developed by Muhammed Ibrahim Kartal | <a href="https://kartal.dev">https://kartal.dev</a></p>
 </div>
