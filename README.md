@@ -1,4 +1,4 @@
-# EdgeVision-Guard
+# sentinelAI-safetyMonitoring
 
 <div align="center">
   <img src="images/main.png" alt="EdgeVision-Guard Platform" width="800">
@@ -195,9 +195,11 @@ python src/onnx_export.py --model-path models/fall_detector.pth \
 
 ## Architecture Deep Dive
 
-<div align="center">
-  <img src="images/architecture.png" alt="Architecture Diagram" width="800">
-</div>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/dark-mode.png">
+  <source media="(prefers-color-scheme: light)" srcset="images/light-mode.png">
+  <img alt="Fallback image description" src="images/dark-mode.png">
+</picture>
 
 ### Component Breakdown
 
